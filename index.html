@@ -61,6 +61,7 @@
   .status { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .12em; color: rgba(248,244,233,.72); }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(248,244,233,.38); }
   .is-running .status-dot { background: #f2a56f; animation: pulse 1.8s ease-in-out infinite; }
+  .is-paused .status-dot { background: #e6c57e; animation: none; }
   @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(242,165,111,.14); } }
   .timer-display { font-variant-numeric: tabular-nums; font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; font-weight: 300; font-size: clamp(48px, 8.2vw, 76px); letter-spacing: -.055em; line-height: 1; margin: 34px 0 8px; position: relative; z-index: 1; }
   .timer-task { min-height: 22px; color: rgba(248,244,233,.72); font-size: 14px; margin-bottom: 26px; position: relative; z-index: 1; overflow-wrap: anywhere; }
@@ -83,6 +84,8 @@
   .chip:hover { border-color: rgba(242,165,111,.65); color: #fff; }
   .running-actions { display: flex; gap: 10px; }
   .running-actions .btn:first-child { flex: 1; }
+  #pauseBtn { min-width: 74px; }
+  .is-paused #pauseBtn { color: #ffd9a0; border-color: rgba(242,196,117,.58); }
   .saved-tip { color: rgba(248,244,233,.52); font-size: 12px; margin-top: 13px; position: relative; z-index: 1; }
 
   /* Calendar */
@@ -214,6 +217,9 @@
     .day { min-height: 37px; border-radius: 9px; }
     .card { padding: 18px; }
     .card-head { margin-bottom: 14px; }
+    .running-actions { gap: 7px; }
+    .running-actions .btn { padding: 12px 10px; }
+    #pauseBtn { min-width: 56px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -255,6 +261,7 @@
           <div id="runningControls" hidden>
             <div class="running-actions">
               <button class="btn btn-light" type="button" id="finishBtn">完成并记录</button>
+              <button class="btn btn-ghost" type="button" id="pauseBtn" title="暂停后时长不再增加">暂停</button>
               <button class="btn btn-ghost" type="button" id="discardBtn" title="不记录这段时长">放弃</button>
             </div>
           </div>
@@ -343,8 +350,24 @@
   try {
     const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
     if (Array.isArray(saved.records)) state.records = saved.records.filter(r => r && r.name && Number.isFinite(r.seconds) && r.start);
-    if (saved.running && saved.running.name && Number.isFinite(saved.running.startedAt)) state.running = saved.running;
+    if (saved.running && saved.running.name && Number.isFinite(saved.running.startedAt)) {
+      const running = saved.running;
+      if (!Number.isFinite(running.accumulatedMs)) running.accumulatedMs = 0;
+      if (!running.pausedAt) {
+        if (!Number.isFinite(running.resumedAt)) running.resumedAt = running.startedAt;
+      } else {
+        running.resumedAt = null;
+      }
+      state.running = running;
+    }
   } catch (err) { console.warn('读取本地记录失败', err); }
+
+  const activeElapsed = (running) => {
+    const accumulated = Number.isFinite(running.accumulatedMs) ? running.accumulatedMs : 0;
+    if (running.pausedAt) return Math.max(0, accumulated);
+    const resumedAt = Number.isFinite(running.resumedAt) ? running.resumedAt : running.startedAt;
+    return accumulated + Math.max(0, Date.now() - resumedAt);
+  };
 
   const persist = () => {
     try { localStorage.setItem(STORE_KEY, JSON.stringify({ records: state.records, running: state.running })); }
@@ -590,17 +613,25 @@
   function renderTimer() {
     const card = $('timerCard');
     const running = state.running;
+    const paused = Boolean(running && running.pausedAt);
     card.classList.toggle('is-running', Boolean(running));
+    card.classList.toggle('is-paused', paused);
     $('idleControls').hidden = Boolean(running);
     $('runningControls').hidden = !running;
-    $('statusText').textContent = running ? '计时中' : '等待开始';
+    $('statusText').textContent = running ? (paused ? '已暂停' : '计时中') : '等待开始';
     $('timerTask').textContent = running ? running.name : '先写下要做的事，再按下开始。';
-    document.title = running ? `${fmtClock(Date.now() - running.startedAt)} · ${running.name}` : '时间打卡簿';
+    $('pauseBtn').textContent = paused ? '继续' : '暂停';
+    $('pauseBtn').title = paused ? '继续计时' : '暂停后时长不再增加';
+    $('pauseBtn').setAttribute('aria-pressed', String(paused));
     if (running) {
-      $('timerDisplay').textContent = fmtClock(Date.now() - running.startedAt);
-      $('savedTip').textContent = '计时会保存在本机，刷新页面也不会中断。';
+      $('timerDisplay').textContent = fmtClock(paused ? running.accumulatedMs : activeElapsed(running));
+      document.title = paused ? `已暂停 · ${running.name}` : `${fmtClock(activeElapsed(running))} · ${running.name}`;
+      $('savedTip').textContent = paused
+        ? '已暂停，这段时长不会再增加；刷新页面也会保留。'
+        : '计时会保存在本机，刷新页面也不会中断。';
     } else {
       $('timerDisplay').textContent = '00:00:00';
+      document.title = '时间打卡簿';
       $('savedTip').textContent = state.records.length
         ? `已经留下 ${state.records.length} 段专注记录。`
         : '记录只保存在这台设备的浏览器里。';
@@ -692,9 +723,11 @@
       taskName.className = 'task-name';
       taskName.textContent = name;
       title.append(dot, taskName);
+      const taskTotalSeconds = allTaskRecords.reduce((sum, record) => sum + record.seconds, 0);
       const meta = document.createElement('span');
       meta.className = 'task-month-meta';
-      meta.textContent = `共 ${allTaskRecords.length} 段`;
+      meta.textContent = `共 ${allTaskRecords.length} 段 · 总 ${fmtDuration(taskTotalSeconds)}`;
+      meta.title = `累计时长 ${fmtDuration(taskTotalSeconds)}`;
       head.append(title, meta);
 
       const weekdays = document.createElement('div');
@@ -841,9 +874,11 @@
       name.className = 'group-name';
       name.textContent = groupName;
       title.append(dot, name);
+      const totalSeconds = items.reduce((sum, record) => sum + record.seconds, 0);
       const count = document.createElement('span');
       count.className = 'group-meta';
-      count.textContent = `${items.length} 段`;
+      count.textContent = `${items.length} 段 · 总 ${fmtDuration(totalSeconds)}`;
+      count.title = `当前列出的 ${items.length} 段记录，合计 ${fmtDuration(totalSeconds)}`;
       head.append(title, count);
 
       const segments = document.createElement('ul');
@@ -922,11 +957,12 @@
 
   function startTicking() {
     clearInterval(timerHandle);
-    if (!state.running) return;
+    if (!state.running || state.running.pausedAt) return;
     timerHandle = setInterval(() => {
-      if (!state.running) return;
-      $('timerDisplay').textContent = fmtClock(Date.now() - state.running.startedAt);
-      document.title = `${fmtClock(Date.now() - state.running.startedAt)} · ${state.running.name}`;
+      if (!state.running || state.running.pausedAt) return;
+      const elapsed = activeElapsed(state.running);
+      $('timerDisplay').textContent = fmtClock(elapsed);
+      document.title = `${fmtClock(elapsed)} · ${state.running.name}`;
     }, 1000);
   }
 
@@ -945,7 +981,8 @@
     resetDiscard();
     const input = $('taskInput');
     const name = input.value.trim() || '未命名专注';
-    state.running = { name, startedAt: Date.now() };
+    const now = Date.now();
+    state.running = { name, startedAt: now, accumulatedMs: 0, resumedAt: now, pausedAt: null };
     persist();
     renderTimer();
     startTicking();
@@ -955,7 +992,7 @@
   function finishTimer() {
     if (!state.running) return;
     const now = Date.now();
-    const seconds = Math.max(1, Math.round((now - state.running.startedAt) / 1000));
+    const seconds = Math.max(1, Math.round(activeElapsed(state.running) / 1000));
     const end = new Date(now);
     const record = {
       id: uid(),
@@ -992,6 +1029,26 @@
     event.preventDefault();
     if (state.running) finishTimer();
     else beginTimer();
+  });
+
+  $('pauseBtn').addEventListener('click', () => {
+    if (!state.running) return;
+    if (state.running.pausedAt) {
+      state.running.resumedAt = Date.now();
+      state.running.pausedAt = null;
+      persist();
+      renderTimer();
+      startTicking();
+      toast('继续计时');
+      return;
+    }
+    state.running.accumulatedMs = activeElapsed(state.running);
+    state.running.pausedAt = Date.now();
+    state.running.resumedAt = null;
+    clearInterval(timerHandle);
+    persist();
+    renderTimer();
+    toast('已暂停，时长不会继续增加');
   });
 
   discardBtn.addEventListener('click', () => {
