@@ -95,6 +95,45 @@
   .is-paused #pauseBtn { color: #ffd9a0; border-color: rgba(242,196,117,.58); }
   .saved-tip { color: rgba(248,244,233,.52); font-size: 12px; margin-top: 13px; position: relative; z-index: 1; }
 
+  /* Weekly tasks */
+  .weekly-card { padding-top: 22px; }
+  .week-label { min-width: 112px; text-align: center; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .week-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; padding: 11px 12px; border-radius: 12px; background: #f6f1e6; border: 1px solid #eae2d2; }
+  .week-stat span { display: block; color: var(--muted); font-size: 10px; margin-bottom: 3px; }
+  .week-stat strong { display: block; font-size: 13px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .week-list { display: grid; gap: 8px; }
+  .week-goal { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 22px; gap: 9px; align-items: center; padding: 10px 10px 10px 11px; border: 1px solid #e9e2d4; border-radius: 13px; background: #fcf9f2; }
+  .week-goal.done { background: #f0f5ee; border-color: #cbdccd; }
+  .week-check { position: relative; width: 21px; height: 21px; cursor: pointer; }
+  .week-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .week-check span { display: grid; place-items: center; width: 21px; height: 21px; border: 1.5px solid #b9c8b9; border-radius: 7px; background: #fffdf8; transition: background .15s, border-color .15s; }
+  .week-check input:checked + span { background: var(--forest); border-color: var(--forest); }
+  .week-check input:checked + span::after { content: "✓"; color: #fffdf8; font-size: 12px; font-weight: 700; line-height: 1; }
+  .week-check input:focus-visible + span { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .week-body { min-width: 0; }
+  .week-name { font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+  .week-goal.done .week-name { color: #637562; text-decoration: line-through; text-decoration-thickness: 1px; }
+  .week-meta { margin-top: 4px; color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .week-meta .week-actual { color: var(--forest); font-weight: 700; }
+  .week-progress { height: 5px; margin-top: 7px; border-radius: 99px; background: #e8e0d1; overflow: hidden; }
+  .week-progress i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #80a486, #2f5d46); transition: width .25s ease; }
+  .week-goal.met .week-progress i { background: linear-gradient(90deg, #e6a06d, #c96f37); }
+  .week-target-edit { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 10px; white-space: nowrap; }
+  .week-target-edit input { width: 42px; border: 1px solid #ddd3c1; border-radius: 6px; background: #fffdf8; color: var(--ink); padding: 3px 4px; font-size: 10px; text-align: right; font-variant-numeric: tabular-nums; }
+  .week-target-edit input:focus { outline: none; border-color: #9db6a2; }
+  .week-remove { border: 0; background: transparent; color: #b6aa96; cursor: pointer; font-size: 15px; line-height: 1; padding: 3px; border-radius: 5px; }
+  .week-remove:hover { color: #b34c32; background: #f4e5de; }
+  .week-empty { padding: 16px 10px; border: 1px dashed #ddd3c1; border-radius: 12px; color: var(--muted); font-size: 11px; line-height: 1.7; text-align: center; }
+  .week-add { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .week-add input[type="text"] { min-width: 0; width: 100%; border: 1px solid #ddd3c1; background: #fffdf8; color: var(--ink); border-radius: 9px; padding: 8px 10px; font-size: 12px; outline: none; }
+  .week-add input[type="text"]:focus { border-color: #9db6a2; }
+  .week-target-field { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 10px; white-space: nowrap; }
+  .week-target-field input { width: 47px; border: 1px solid #ddd3c1; background: #fffdf8; color: var(--ink); border-radius: 7px; padding: 6px 4px; font-size: 11px; text-align: right; outline: none; }
+  .week-target-field input:focus { border-color: #9db6a2; }
+  .week-add-btn { border: 0; border-radius: 9px; background: var(--forest); color: #fffdf8; padding: 8px 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .week-add-btn:hover { background: #3b6d52; }
+  .week-note { margin: 9px 0 0; color: #9a9283; font-size: 10px; line-height: 1.6; }
+
   /* Calendar */
   .calendar-nav { display: flex; align-items: center; gap: 8px; }
   .icon-btn { width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--line); background: transparent; cursor: pointer; color: var(--muted); display: grid; place-items: center; padding: 0; font-size: 17px; }
@@ -227,6 +266,11 @@
     .running-actions { gap: 7px; }
     .running-actions .btn { padding: 12px 10px; }
     #pauseBtn { min-width: 56px; }
+    .week-stats { gap: 5px; padding: 9px; }
+    .week-stat strong { font-size: 12px; }
+    .week-goal { grid-template-columns: 22px minmax(0, 1fr) auto 20px; gap: 6px; padding: 9px 8px; }
+    .week-add { grid-template-columns: 1fr auto; }
+    .week-add input[type="text"] { grid-column: 1 / -1; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -276,6 +320,29 @@
         <div class="saved-tip" id="savedTip"></div>
       </section>
 
+      <section class="card weekly-card" aria-label="每周任务">
+        <div class="card-head">
+          <h2>每周任务<span class="record-count" id="weekGoalCount">0</span></h2>
+          <div class="calendar-nav">
+            <button class="icon-btn" id="prevWeek" type="button" aria-label="上一周">‹</button>
+            <span class="week-label" id="weekLabel"></span>
+            <button class="icon-btn" id="nextWeek" type="button" aria-label="下一周">›</button>
+          </div>
+        </div>
+        <div class="week-stats">
+          <div class="week-stat"><span>本周全部计时</span><strong id="weekActual">0 分钟</strong></div>
+          <div class="week-stat"><span>目标合计</span><strong id="weekTarget">0 分钟</strong></div>
+          <div class="week-stat"><span>已打勾</span><strong id="weekDone">0 / 0</strong></div>
+        </div>
+        <div class="week-list" id="weekList"></div>
+        <form class="week-add" id="weekForm">
+          <input id="weekTaskInput" type="text" maxlength="40" placeholder="添加本周任务，例如：高数复习" autocomplete="off" aria-label="本周任务名称">
+          <label class="week-target-field">目标 <input id="weekTargetInput" type="number" min="0" max="168" step="0.5" placeholder="0" aria-label="本周目标小时数"> 小时</label>
+          <button class="week-add-btn" type="button" id="weekAddBtn">添加</button>
+        </form>
+        <p class="week-note">实际时间自动来自本周计时记录，按周一至周日统计；「累计」是该任务的全部历史时长。</p>
+      </section>
+
       <section class="card records-card" aria-label="记录明细">
         <div class="card-head">
           <h2>记录明细<span class="record-count" id="recordCount">0</span></h2>
@@ -319,7 +386,7 @@
     <p class="eyebrow">RESTORE BACKUP</p>
     <h2 id="importTitle">导入备份</h2>
     <p class="modal-copy" id="importSummary"></p>
-    <p class="modal-warning">「覆盖现有」会替换当前全部记录。建议先导出当前记录，再执行覆盖。</p>
+    <p class="modal-warning">「覆盖现有」会替换当前全部记录和每周任务。建议先导出当前数据，再执行覆盖。</p>
     <div class="modal-actions">
       <button class="modal-btn" id="importCancel" type="button">取消</button>
       <button class="modal-btn merge" id="importMerge" type="button">合并导入</button>
@@ -348,9 +415,10 @@
   const dateKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`);
 
-  let state = { records: [], running: null, selectedDate: dateKey(), selectedTask: null, favorites: [], hiddenRecent: [] };
+  let state = { records: [], running: null, selectedDate: dateKey(), selectedTask: null, favorites: [], hiddenRecent: [], weeklyGoals: [] };
   let viewMonth = new Date();
   viewMonth.setDate(1);
+  let selectedWeekStart = dateKey(startOfWeek(new Date()));
   let timerHandle = null;
   let toastHandle = null;
 
@@ -359,6 +427,16 @@
     if (Array.isArray(saved.records)) state.records = saved.records.filter(r => r && r.name && Number.isFinite(r.seconds) && r.start);
     if (Array.isArray(saved.favorites)) state.favorites = [...new Set(saved.favorites.filter(n => typeof n === 'string' && n.trim()).map(n => n.trim()))];
     if (Array.isArray(saved.hiddenRecent)) state.hiddenRecent = [...new Set(saved.hiddenRecent.filter(n => typeof n === 'string' && n.trim()).map(n => n.trim()))];
+    if (Array.isArray(saved.weeklyGoals)) {
+      state.weeklyGoals = saved.weeklyGoals.filter(goal => goal && typeof goal.name === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(goal.weekStart || '')).map(goal => ({
+        id: typeof goal.id === 'string' && goal.id ? goal.id : uid(),
+        weekStart: goal.weekStart,
+        name: goal.name.trim().slice(0, 40),
+        targetSeconds: Math.max(0, Math.round(Number(goal.targetSeconds) || 0)),
+        done: Boolean(goal.done),
+        createdAt: goal.createdAt || new Date().toISOString()
+      })).filter(goal => goal.name);
+    }
     if (saved.running && saved.running.name && Number.isFinite(saved.running.startedAt)) {
       const running = saved.running;
       if (!Number.isFinite(running.accumulatedMs)) running.accumulatedMs = 0;
@@ -384,7 +462,8 @@
         records: state.records,
         running: state.running,
         favorites: state.favorites,
-        hiddenRecent: state.hiddenRecent
+        hiddenRecent: state.hiddenRecent,
+        weeklyGoals: state.weeklyGoals
       }));
     } catch (err) { toast('浏览器存储不可用，刷新后可能丢失记录'); }
   };
@@ -395,6 +474,7 @@
   };
 
   const fmtDuration = (seconds) => {
+    if (!seconds) return '0 分钟';
     if (seconds < 60) return `${seconds} 秒`;
     const h = Math.floor(seconds / 3600);
     const m = Math.floor(seconds % 3600 / 60);
@@ -449,6 +529,23 @@
     return { id, name, start: start.toISOString(), end: end.toISOString(), date, seconds };
   }
 
+  function normalizeImportedGoal(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    const name = typeof raw.name === 'string' ? raw.name.trim().slice(0, 40) : '';
+    if (!name || !isValidDateKey(raw.weekStart)) return null;
+    const weekStart = dateKey(startOfWeek(parseDateKey(raw.weekStart)));
+    const targetSeconds = Math.max(0, Math.min(168 * 3600, Math.round(Number(raw.targetSeconds) || 0)));
+    const created = new Date(raw.createdAt || Date.now());
+    return {
+      id: typeof raw.id === 'string' && raw.id.trim() ? raw.id.trim() : uid(),
+      weekStart,
+      name,
+      targetSeconds,
+      done: Boolean(raw.done),
+      createdAt: Number.isNaN(created.getTime()) ? new Date().toISOString() : created.toISOString()
+    };
+  }
+
   function parseBackupText(text) {
     let data;
     try {
@@ -456,10 +553,11 @@
     } catch (err) {
       throw new Error('文件不是有效的 JSON');
     }
-    const list = Array.isArray(data) ? data : (data && Array.isArray(data.records) ? data.records : null);
-    if (!list) throw new Error('文件里没有找到记录列表');
-    if (!list.length) throw new Error('备份里没有任何记录');
+    const list = Array.isArray(data) ? data : (data && Array.isArray(data.records) ? data.records : []);
+    const goalList = data && !Array.isArray(data) && Array.isArray(data.weeklyGoals) ? data.weeklyGoals : [];
+    if (!list.length && !goalList.length) throw new Error('备份里没有记录或每周任务');
     if (list.length > 50000) throw new Error('备份记录过多');
+    if (goalList.length > 5000) throw new Error('备份中的每周任务过多');
 
     const byId = new Map();
     let invalid = 0;
@@ -469,8 +567,24 @@
       if (!byId.has(record.id)) byId.set(record.id, record);
     });
     const records = [...byId.values()];
-    if (!records.length) throw new Error('备份里没有可识别的有效记录');
-    return { records, invalid, duplicateIds: list.length - invalid - records.length };
+
+    const goalsById = new Map();
+    let invalidGoals = 0;
+    goalList.forEach(raw => {
+      const goal = normalizeImportedGoal(raw);
+      if (!goal) { invalidGoals++; return; }
+      if (!goalsById.has(goal.id)) goalsById.set(goal.id, goal);
+    });
+    const weeklyGoals = [...goalsById.values()];
+    if (!records.length && !weeklyGoals.length) throw new Error('备份里没有可识别的有效数据');
+    return {
+      records,
+      invalid,
+      duplicateIds: list.length - invalid - records.length,
+      weeklyGoals,
+      invalidGoals,
+      duplicateGoals: goalList.length - invalidGoals - weeklyGoals.length
+    };
   }
 
   function readFileAsText(file) {
@@ -483,11 +597,11 @@
   }
 
   function downloadBackup() {
-    if (!state.records.length) { toast('还没有记录可以导出'); return; }
+    if (!state.records.length && !state.weeklyGoals.length) { toast('还没有记录或每周任务可以导出'); return; }
     const exportedAt = new Date();
     const payload = {
       app: 'time-checkin',
-      version: 1,
+      version: 2,
       exportedAt: exportedAt.toISOString(),
       records: state.records.map(record => ({
         id: record.id,
@@ -496,6 +610,14 @@
         end: record.end,
         date: record.date,
         seconds: record.seconds
+      })),
+      weeklyGoals: state.weeklyGoals.map(goal => ({
+        id: goal.id,
+        weekStart: goal.weekStart,
+        name: goal.name,
+        targetSeconds: goal.targetSeconds,
+        done: goal.done,
+        createdAt: goal.createdAt
       }))
     };
     try {
@@ -508,20 +630,42 @@
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 2000);
-      toast(`已导出 ${state.records.length} 段记录`);
+      const parts = [];
+      if (state.records.length) parts.push(`${state.records.length} 段记录`);
+      if (state.weeklyGoals.length) parts.push(`${state.weeklyGoals.length} 个每周任务`);
+      toast(`已导出 ${parts.join('、')}`);
     } catch (err) {
       toast('导出失败，请换用 Chrome 或 Edge 浏览器', 4000);
     }
   }
 
-  function openImportModal(records, fileName) {
+  function openImportModal(records, weeklyGoals, fileName) {
     const existingIds = new Set(state.records.map(record => record.id));
     const duplicates = records.filter(record => existingIds.has(record.id)).length;
+    const existingGoalIds = new Set(state.weeklyGoals.map(goal => goal.id));
+    const existingGoalKeys = new Set(state.weeklyGoals.map(goal => `${goal.weekStart}::${goal.name}`));
+    const duplicateGoals = weeklyGoals.filter(goal => existingGoalIds.has(goal.id) || existingGoalKeys.has(`${goal.weekStart}::${goal.name}`)).length;
     const taskCount = new Set(records.map(record => record.name.trim())).size;
     const dates = records.map(record => record.date).sort();
-    const invalid = pendingImport && pendingImport.invalid ? ` 另有 ${pendingImport.invalid} 条无效记录会被忽略。` : '';
-    $('importSummary').textContent = `「${fileName}」中有 ${records.length} 段记录，来自 ${taskCount} 个任务，日期从 ${fmtDateKey(dates[0])} 到 ${fmtDateKey(dates[dates.length - 1])}。其中 ${duplicates} 条当前已存在，合并导入时会跳过。${invalid}`;
+
+    const parts = [];
+    if (records.length) parts.push(`${records.length} 段记录`);
+    if (weeklyGoals.length) parts.push(`${weeklyGoals.length} 个每周任务`);
+    let summary = `「${fileName}」中有 ${parts.join('、')}`;
+    if (records.length) summary += `，来自 ${taskCount} 个任务，日期从 ${fmtDateKey(dates[0])} 到 ${fmtDateKey(dates[dates.length - 1])}`;
+    summary += '。';
+    const skipped = [];
+    if (duplicates) skipped.push(`${duplicates} 条记录`);
+    if (duplicateGoals) skipped.push(`${duplicateGoals} 个每周任务`);
+    if (skipped.length) summary += `其中 ${skipped.join('、')}当前已存在，合并导入时会跳过。`;
+    const ignored = [];
+    if (pendingImport && pendingImport.invalid) ignored.push(`${pendingImport.invalid} 条无效记录`);
+    if (pendingImport && pendingImport.invalidGoals) ignored.push(`${pendingImport.invalidGoals} 个无效每周任务`);
+    if (ignored.length) summary += `另有 ${ignored.join('、')}会被忽略。`;
+    $('importSummary').textContent = summary;
+
     pendingImport.records = records;
+    pendingImport.weeklyGoals = weeklyGoals;
     pendingImport.fileName = fileName;
     importReturnFocus = document.activeElement;
     $('importModal').hidden = false;
@@ -545,13 +689,18 @@
   }
 
   function applyImport(mode) {
-    if (!pendingImport || !pendingImport.records.length) return;
-    const imported = pendingImport.records;
+    if (!pendingImport) return;
+    const imported = pendingImport.records || [];
+    const importedGoals = pendingImport.weeklyGoals || [];
+    if (!imported.length && !importedGoals.length) return;
     let count = 0;
+    let goalCount = 0;
 
     if (mode === 'replace') {
       state.records = imported;
+      state.weeklyGoals = importedGoals;
       count = imported.length;
+      goalCount = importedGoals.length;
     } else {
       const ids = new Set(state.records.map(record => record.id));
       imported.forEach(record => {
@@ -561,25 +710,41 @@
           count++;
         }
       });
-      if (!count) {
+      const goalIds = new Set(state.weeklyGoals.map(goal => goal.id));
+      const goalKeys = new Set(state.weeklyGoals.map(goal => `${goal.weekStart}::${goal.name}`));
+      importedGoals.forEach(goal => {
+        const key = `${goal.weekStart}::${goal.name}`;
+        if (goalIds.has(goal.id) || goalKeys.has(key)) return;
+        goalIds.add(goal.id);
+        goalKeys.add(key);
+        state.weeklyGoals.push(goal);
+        goalCount++;
+      });
+      if (!count && !goalCount) {
         closeImportModal();
-        toast('备份中的记录都已存在，无需合并', 3600);
+        toast('备份中的数据都已存在，无需合并', 3600);
         return;
       }
     }
 
     state.selectedTask = null;
     state.selectedDate = null;
-    state.running = state.running || null;
     const latest = latestRecordMonth(state.records);
     if (latest) {
       const date = new Date(latest);
       viewMonth = new Date(date.getFullYear(), date.getMonth(), 1);
     }
+    if (importedGoals.length) {
+      const latestWeek = importedGoals.map(goal => goal.weekStart).sort().pop();
+      if (latestWeek) selectedWeekStart = latestWeek;
+    }
     persist();
     renderAll();
     closeImportModal();
-    toast(mode === 'replace' ? `已恢复 ${count} 段记录` : `已合并导入 ${count} 段记录`, 3200);
+    const parts = [];
+    if (count) parts.push(`${count} 段记录`);
+    if (goalCount) parts.push(`${goalCount} 个每周任务`);
+    toast(mode === 'replace' ? `已恢复 ${parts.join('、')}` : `已合并导入 ${parts.join('、')}`, 3200);
   }
 
   $('exportBtn').addEventListener('click', downloadBackup);
@@ -596,7 +761,7 @@
       const text = await readFileAsText(file);
       const parsed = parseBackupText(text);
       pendingImport = parsed;
-      openImportModal(parsed.records, file.name);
+      openImportModal(parsed.records, parsed.weeklyGoals, file.name);
     } catch (err) {
       pendingImport = null;
       toast(`导入失败：${err.message}`, 4500);
@@ -885,6 +1050,183 @@
     $('monthSummary').textContent = `本月共 ${days} 天打卡、${monthRecords.length} 段记录，分布在 ${names.length} 个任务的日历上。`;
   }
 
+  function startOfWeek(date) {
+    const day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const offset = (day.getDay() + 6) % 7;
+    day.setDate(day.getDate() - offset);
+    return day;
+  }
+
+  function addDays(date, days) {
+    const next = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    next.setDate(next.getDate() + days);
+    return next;
+  }
+
+  function parseDateKey(key) {
+    const [year, month, day] = key.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  function fmtWeekRange(startKey) {
+    const start = parseDateKey(startKey);
+    const end = addDays(start, 6);
+    return `${start.getMonth() + 1}月${start.getDate()}日 – ${end.getMonth() + 1}月${end.getDate()}日`;
+  }
+
+  function recordsInWeek(startKey) {
+    const endKey = dateKey(addDays(parseDateKey(startKey), 6));
+    return state.records.filter(record => record.date >= startKey && record.date <= endKey);
+  }
+
+  function addWeeklyGoal() {
+    const nameInput = $('weekTaskInput');
+    const targetInput = $('weekTargetInput');
+    const name = nameInput.value.trim();
+    if (!name) {
+      nameInput.focus();
+      toast('先写下本周任务名称');
+      return;
+    }
+    if (state.weeklyGoals.some(goal => goal.weekStart === selectedWeekStart && goal.name === name)) {
+      toast(`「${name}」已经在本周任务里了`);
+      nameInput.focus();
+      return;
+    }
+    let hours = Number(targetInput.value);
+    if (!Number.isFinite(hours) || hours < 0) hours = 0;
+    hours = Math.min(hours, 168);
+    state.weeklyGoals.push({
+      id: uid(),
+      weekStart: selectedWeekStart,
+      name,
+      targetSeconds: Math.round(hours * 3600),
+      done: false,
+      createdAt: new Date().toISOString()
+    });
+    persist();
+    nameInput.value = '';
+    targetInput.value = '';
+    renderWeekly();
+    nameInput.focus();
+    toast(`已添加本周任务「${name}」`);
+  }
+
+  function renderWeekly() {
+    const currentWeekStart = dateKey(startOfWeek(new Date()));
+    $('weekLabel').textContent = `${selectedWeekStart === currentWeekStart ? '本周 · ' : ''}${fmtWeekRange(selectedWeekStart)}`;
+
+    const weekRecords = recordsInWeek(selectedWeekStart);
+    const goals = state.weeklyGoals
+      .filter(goal => goal.weekStart === selectedWeekStart)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const actualTotal = weekRecords.reduce((sum, record) => sum + record.seconds, 0);
+    const targetTotal = goals.reduce((sum, goal) => sum + goal.targetSeconds, 0);
+    const doneCount = goals.filter(goal => goal.done).length;
+
+    $('weekGoalCount').textContent = goals.length;
+    $('weekActual').textContent = fmtDuration(actualTotal);
+    $('weekTarget').textContent = fmtDuration(targetTotal);
+    $('weekDone').textContent = `${doneCount} / ${goals.length}`;
+
+    const list = $('weekList');
+    list.innerHTML = '';
+    if (!goals.length) {
+      list.innerHTML = '<div class="week-empty">本周还没有任务。<br>在下面添加任务，写下目标小时数；计时后这里会自动显示实际时长。</div>';
+      return;
+    }
+
+    goals.forEach(goal => {
+      const actualSeconds = weekRecords
+        .filter(record => record.name.trim() === goal.name)
+        .reduce((sum, record) => sum + record.seconds, 0);
+      const totalSeconds = state.records
+        .filter(record => record.name.trim() === goal.name)
+        .reduce((sum, record) => sum + record.seconds, 0);
+      const met = goal.targetSeconds > 0 && actualSeconds >= goal.targetSeconds;
+
+      const row = document.createElement('div');
+      row.className = 'week-goal' + (goal.done ? ' done' : '') + (met ? ' met' : '');
+
+      const checkLabel = document.createElement('label');
+      checkLabel.className = 'week-check';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = goal.done;
+      checkbox.setAttribute('aria-label', `完成本周任务：${goal.name}`);
+      const box = document.createElement('span');
+      checkbox.addEventListener('change', () => {
+        goal.done = checkbox.checked;
+        persist();
+        renderWeekly();
+        toast(goal.done ? `已打勾「${goal.name}」` : `已取消「${goal.name}」的勾`);
+      });
+      checkLabel.append(checkbox, box);
+
+      const body = document.createElement('div');
+      body.className = 'week-body';
+      const name = document.createElement('div');
+      name.className = 'week-name';
+      name.textContent = goal.name;
+      const meta = document.createElement('div');
+      meta.className = 'week-meta';
+      const actualText = document.createElement('span');
+      actualText.className = 'week-actual';
+      actualText.textContent = fmtDuration(actualSeconds);
+      meta.append(document.createTextNode('本周 '), actualText, document.createTextNode(` · 累计 ${fmtDuration(totalSeconds)}`));
+      body.append(name, meta);
+
+      if (goal.targetSeconds > 0) {
+        const progress = document.createElement('div');
+        progress.className = 'week-progress';
+        const bar = document.createElement('i');
+        bar.style.width = `${Math.min(100, Math.round(actualSeconds / goal.targetSeconds * 100))}%`;
+        progress.appendChild(bar);
+        progress.title = `本周已完成 ${fmtDuration(actualSeconds)} / 目标 ${fmtDuration(goal.targetSeconds)}`;
+        body.appendChild(progress);
+      }
+
+      const targetLabel = document.createElement('label');
+      targetLabel.className = 'week-target-edit';
+      targetLabel.append(document.createTextNode('目标 '));
+      const targetInput = document.createElement('input');
+      targetInput.type = 'number';
+      targetInput.min = '0';
+      targetInput.max = '168';
+      targetInput.step = '0.5';
+      targetInput.value = goal.targetSeconds ? String(Number((goal.targetSeconds / 3600).toFixed(2))) : '';
+      targetInput.placeholder = '0';
+      targetInput.setAttribute('aria-label', `设置${goal.name}的本周目标小时数`);
+      targetInput.title = '修改本周目标小时数';
+      targetInput.addEventListener('change', () => {
+        let hours = Number(targetInput.value);
+        if (!Number.isFinite(hours) || hours < 0) hours = 0;
+        hours = Math.min(hours, 168);
+        goal.targetSeconds = Math.round(hours * 3600);
+        persist();
+        renderWeekly();
+        toast(hours ? `「${goal.name}」本周目标 ${fmtDuration(goal.targetSeconds)}` : `已取消「${goal.name}」的目标时长`);
+      });
+      targetLabel.append(targetInput, document.createTextNode(' h'));
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'week-remove';
+      remove.textContent = '×';
+      remove.title = '删除本周任务（不会删除计时记录）';
+      remove.setAttribute('aria-label', `删除本周任务：${goal.name}`);
+      remove.addEventListener('click', () => {
+        state.weeklyGoals = state.weeklyGoals.filter(item => item.id !== goal.id);
+        persist();
+        renderWeekly();
+        toast(`已删除本周任务「${goal.name}」，计时记录仍保留`);
+      });
+
+      row.append(checkLabel, body, targetLabel, remove);
+      list.appendChild(row);
+    });
+  }
+
   function renderRecords() {
     const list = $('recordList');
     const all = !state.selectedTask && !state.selectedDate;
@@ -905,7 +1247,7 @@
     const rangeLabel = [state.selectedTask, dateLabel].filter(Boolean).join(' · ') || '全部记录';
 
     $('recordCount').textContent = records.length;
-    $('exportBtn').disabled = state.records.length === 0;
+    $('exportBtn').disabled = state.records.length === 0 && state.weeklyGoals.length === 0;
     $('listRange').textContent = rangeLabel;
     $('listRange').title = rangeLabel;
     $('filterClear').classList.toggle('show', !all);
@@ -1025,6 +1367,7 @@
     renderHeader();
     renderTimer();
     renderTaskCalendars();
+    renderWeekly();
     renderRecords();
   }
 
@@ -1141,6 +1484,27 @@
     renderAll();
     $('taskInput').focus();
     toast('已放弃这段计时');
+  });
+
+  $('weekAddBtn').addEventListener('click', addWeeklyGoal);
+  $('weekForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    addWeeklyGoal();
+  });
+  ['weekTaskInput', 'weekTargetInput'].forEach(id => {
+    $(id).addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      addWeeklyGoal();
+    });
+  });
+  $('prevWeek').addEventListener('click', () => {
+    selectedWeekStart = dateKey(addDays(parseDateKey(selectedWeekStart), -7));
+    renderWeekly();
+  });
+  $('nextWeek').addEventListener('click', () => {
+    selectedWeekStart = dateKey(addDays(parseDateKey(selectedWeekStart), 7));
+    renderWeekly();
   });
 
   $('prevMonth').addEventListener('click', () => {
