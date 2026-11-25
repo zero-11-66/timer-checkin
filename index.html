@@ -376,7 +376,7 @@
           </div>
           <div class="fixed-list" id="fixedList"></div>
         </div>
-        <p class="week-note">点任务名可直接修改；重要程度和截止日期可点开调整。实际时间自动来自本周计时记录，点任务名旁的 ☆ 可固定，之后一键加到下一周。</p>
+        <p class="week-note">点任务名会填入上方计时框，并可直接改名；重要程度和截止日期可点开调整。实际时间自动来自本周计时记录，点 ☆ 可固定，之后一键加到下一周。</p>
       </section>
 
       <section class="card records-card" aria-label="记录明细">
@@ -1305,6 +1305,13 @@
     });
   }
 
+  function fillTimerTask(name) {
+    if (state.running) return false;
+    const input = $('taskInput');
+    input.value = name;
+    return true;
+  }
+
   function renameWeeklyTask(goal, rawName) {
     const oldName = goal.name;
     const newName = rawName.trim().slice(0, 40);
@@ -1329,12 +1336,15 @@
     state.hiddenRecent = state.hiddenRecent.map(name => name === oldName ? newName : name);
     if (state.running && state.running.name === oldName) state.running.name = newName;
     if (state.selectedTask === oldName) state.selectedTask = newName;
+    if (!state.running) $('taskInput').value = newName;
     persist();
     renderAll();
-    toast(`任务名已改为「${newName}」`);
+    toast(`任务名已改为「${newName}」，并填入上方计时框`);
   }
 
   function startRenaming(goal, nameButton) {
+    const filled = fillTimerTask(goal.name);
+    if (filled) toast(`已把「${goal.name}」填入上方计时框`);
     const input = document.createElement('input');
     input.className = 'week-name-input';
     input.type = 'text';
