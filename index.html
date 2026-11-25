@@ -102,7 +102,7 @@
   .week-stat span { display: block; color: var(--muted); font-size: 10px; margin-bottom: 3px; }
   .week-stat strong { display: block; font-size: 13px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   .week-list { display: grid; gap: 8px; }
-  .week-goal { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 22px; gap: 9px; align-items: center; padding: 10px 10px 10px 11px; border: 1px solid #e9e2d4; border-radius: 13px; background: #fcf9f2; }
+  .week-goal { display: grid; grid-template-columns: 22px minmax(0, 1fr) 22px; gap: 9px; align-items: start; padding: 10px 10px 10px 11px; border: 1px solid #e9e2d4; border-radius: 13px; background: #fcf9f2; }
   .week-goal.done { background: #f0f5ee; border-color: #cbdccd; }
   .week-check { position: relative; width: 21px; height: 21px; cursor: pointer; }
   .week-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
@@ -112,7 +112,9 @@
   .week-check input:focus-visible + span { outline: 2px solid var(--orange); outline-offset: 2px; }
   .week-body { min-width: 0; }
   .week-name-row { display: flex; align-items: center; gap: 4px; min-width: 0; }
-  .week-name { font-size: 13px; font-weight: 700; overflow-wrap: anywhere; min-width: 0; }
+  .week-name { min-width: 0; border: 0; background: transparent; color: var(--ink); padding: 0; text-align: left; font-family: inherit; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; cursor: text; border-bottom: 1px dashed transparent; }
+  .week-name:hover { border-bottom-color: #c9bda9; }
+  .week-name-input { min-width: 0; flex: 1; border: 1px solid #9db6a2; background: #fffdf8; color: var(--ink); border-radius: 6px; padding: 3px 6px; font-family: inherit; font-size: 13px; font-weight: 700; outline: none; }
   .week-goal.done .week-name { color: #637562; text-decoration: line-through; text-decoration-thickness: 1px; }
   .week-pin { flex: none; border: 0; background: transparent; color: #b9ad99; cursor: pointer; font-size: 13px; line-height: 1; padding: 1px 2px; border-radius: 4px; }
   .week-pin:hover { color: #c07a35; background: #f6e8d7; }
@@ -122,6 +124,14 @@
   .week-progress { height: 5px; margin-top: 7px; border-radius: 99px; background: #e8e0d1; overflow: hidden; }
   .week-progress i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #80a486, #2f5d46); transition: width .25s ease; }
   .week-goal.met .week-progress i { background: linear-gradient(90deg, #e6a06d, #c96f37); }
+  .week-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 7px; }
+  .week-priority { border: 1px solid #ddd3c1; background: #fffdf8; color: var(--muted); border-radius: 999px; padding: 3px 5px; font-size: 9px; cursor: pointer; outline: none; }
+  .week-priority[data-priority="high"] { color: #a9472d; border-color: #e0b09e; background: #fbede5; font-weight: 700; }
+  .week-priority[data-priority="normal"] { color: #4e6b55; border-color: #c6d7c9; background: #f0f5ee; }
+  .week-priority[data-priority="low"] { color: #8e887b; border-color: #e2dccf; background: #faf7f0; }
+  .week-date { max-width: 118px; border: 1px solid #ddd3c1; background: #fffdf8; color: var(--muted); border-radius: 6px; padding: 3px 5px; font-family: inherit; font-size: 9px; outline: none; }
+  .week-date:focus { border-color: #9db6a2; }
+  .week-date.overdue { color: #a9472d; border-color: #e0b09e; background: #fff7f2; }
   .week-target-edit { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 10px; white-space: nowrap; }
   .week-target-edit input { width: 42px; border: 1px solid #ddd3c1; border-radius: 6px; background: #fffdf8; color: var(--ink); padding: 3px 4px; font-size: 10px; text-align: right; font-variant-numeric: tabular-nums; }
   .week-target-edit input:focus { outline: none; border-color: #9db6a2; }
@@ -286,7 +296,8 @@
     #pauseBtn { min-width: 56px; }
     .week-stats { gap: 5px; padding: 9px; }
     .week-stat strong { font-size: 12px; }
-    .week-goal { grid-template-columns: 22px minmax(0, 1fr) auto 20px; gap: 6px; padding: 9px 8px; }
+    .week-goal { grid-template-columns: 22px minmax(0, 1fr) 20px; gap: 6px; padding: 9px 8px; }
+    .week-date { max-width: 108px; }
     .week-add { grid-template-columns: 1fr auto; }
     .week-add input[type="text"] { grid-column: 1 / -1; }
   }
@@ -338,9 +349,9 @@
         <div class="saved-tip" id="savedTip"></div>
       </section>
 
-      <section class="card weekly-card" aria-label="每周任务">
+      <section class="card weekly-card" aria-label="每周待办">
         <div class="card-head">
-          <h2>每周任务<span class="record-count" id="weekGoalCount">0</span></h2>
+          <h2>每周待办<span class="record-count" id="weekGoalCount">0</span></h2>
           <div class="calendar-nav">
             <button class="icon-btn" id="prevWeek" type="button" aria-label="上一周">‹</button>
             <span class="week-label" id="weekLabel"></span>
@@ -354,7 +365,7 @@
         </div>
         <div class="week-list" id="weekList"></div>
         <form class="week-add" id="weekForm">
-          <input id="weekTaskInput" type="text" maxlength="40" placeholder="添加本周任务，例如：高数复习" autocomplete="off" aria-label="本周任务名称">
+          <input id="weekTaskInput" type="text" maxlength="40" placeholder="添加本周待办，例如：高数复习" autocomplete="off" aria-label="本周待办名称">
           <label class="week-target-field">目标 <input id="weekTargetInput" type="number" min="0" max="168" step="0.5" placeholder="0" aria-label="本周目标小时数"> 小时</label>
           <button class="week-add-btn" type="button" id="weekAddBtn">添加</button>
         </form>
@@ -365,7 +376,7 @@
           </div>
           <div class="fixed-list" id="fixedList"></div>
         </div>
-        <p class="week-note">实际时间自动来自本周计时记录，按周一至周日统计；「累计」是该任务的全部历史时长。点任务名旁的 ☆ 可固定，之后一键加到下一周。</p>
+        <p class="week-note">点任务名可直接修改；重要程度和截止日期可点开调整。实际时间自动来自本周计时记录，点任务名旁的 ☆ 可固定，之后一键加到下一周。</p>
       </section>
 
       <section class="card records-card" aria-label="记录明细">
@@ -439,6 +450,7 @@
   const pad = (n) => String(n).padStart(2, '0');
   const dateKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  const PRIORITY_LABELS = { high: '重要', normal: '普通', low: '次要' };
 
   let state = { records: [], running: null, selectedDate: dateKey(), selectedTask: null, favorites: [], hiddenRecent: [], weeklyGoals: [], fixedTasks: [] };
   let viewMonth = new Date();
@@ -459,6 +471,8 @@
         name: goal.name.trim().slice(0, 40),
         targetSeconds: Math.max(0, Math.round(Number(goal.targetSeconds) || 0)),
         done: Boolean(goal.done),
+        priority: ['high', 'normal', 'low'].includes(goal.priority) ? goal.priority : 'normal',
+        dueDate: /^\d{4}-\d{2}-\d{2}$/.test(goal.dueDate || '') ? goal.dueDate : null,
         createdAt: goal.createdAt || new Date().toISOString()
       })).filter(goal => goal.name);
     }
@@ -468,6 +482,7 @@
         id: typeof task.id === 'string' && task.id ? task.id : uid(),
         name: task.name.trim().slice(0, 40),
         targetSeconds: Math.max(0, Math.min(168 * 3600, Math.round(Number(task.targetSeconds) || 0))),
+        priority: ['high', 'normal', 'low'].includes(task.priority) ? task.priority : 'normal',
         createdAt: task.createdAt || new Date().toISOString()
       })).filter(task => {
         if (seenFixed.has(task.name)) return false;
@@ -581,6 +596,8 @@
       name,
       targetSeconds,
       done: Boolean(raw.done),
+      priority: ['high', 'normal', 'low'].includes(raw.priority) ? raw.priority : 'normal',
+      dueDate: isValidDateKey(raw.dueDate) ? raw.dueDate : null,
       createdAt: Number.isNaN(created.getTime()) ? new Date().toISOString() : created.toISOString()
     };
   }
@@ -594,6 +611,7 @@
       id: typeof raw.id === 'string' && raw.id.trim() ? raw.id.trim() : uid(),
       name,
       targetSeconds: Math.max(0, Math.min(168 * 3600, Math.round(Number(raw.targetSeconds) || 0))),
+      priority: ['high', 'normal', 'low'].includes(raw.priority) ? raw.priority : 'normal',
       createdAt: Number.isNaN(created.getTime()) ? new Date().toISOString() : created.toISOString()
     };
   }
@@ -683,12 +701,15 @@
         name: goal.name,
         targetSeconds: goal.targetSeconds,
         done: goal.done,
+        priority: goal.priority || 'normal',
+        dueDate: goal.dueDate || null,
         createdAt: goal.createdAt
       })),
       fixedTasks: state.fixedTasks.map(task => ({
         id: task.id,
         name: task.name,
         targetSeconds: task.targetSeconds,
+        priority: task.priority || 'normal',
         createdAt: task.createdAt
       }))
     };
@@ -1193,6 +1214,8 @@
       name,
       targetSeconds: Math.round(hours * 3600),
       done: false,
+      priority: 'normal',
+      dueDate: null,
       createdAt: new Date().toISOString()
     });
     persist();
@@ -1216,6 +1239,8 @@
       name: template.name,
       targetSeconds: template.targetSeconds,
       done: false,
+      priority: template.priority || 'normal',
+      dueDate: null,
       createdAt: new Date().toISOString()
     });
     return true;
@@ -1244,7 +1269,7 @@
       name.title = template.name;
       const target = document.createElement('span');
       target.className = 'fixed-target';
-      target.textContent = template.targetSeconds ? fmtDuration(template.targetSeconds) : '未设目标';
+      target.textContent = `${PRIORITY_LABELS[template.priority] || '普通'} · ${template.targetSeconds ? fmtDuration(template.targetSeconds) : '未设目标'}`;
 
       const next = document.createElement('button');
       next.type = 'button';
@@ -1278,6 +1303,61 @@
       item.append(star, name, target, next, remove);
       list.appendChild(item);
     });
+  }
+
+  function renameWeeklyTask(goal, rawName) {
+    const oldName = goal.name;
+    const newName = rawName.trim().slice(0, 40);
+    if (!newName || newName === oldName) {
+      renderWeekly();
+      return;
+    }
+    const collision = state.weeklyGoals.some(item => item.name === newName)
+      || state.fixedTasks.some(item => item.name === newName)
+      || state.records.some(record => record.name.trim() === newName);
+    if (collision) {
+      toast(`已经有一个叫「${newName}」的任务，请换个名字`);
+      renderWeekly();
+      return;
+    }
+
+    // 任务改名会同步历史记录，保证本周和累计时长仍然跟着这件事。
+    state.records.forEach(record => { if (record.name.trim() === oldName) record.name = newName; });
+    state.weeklyGoals.forEach(item => { if (item.name === oldName) item.name = newName; });
+    state.fixedTasks.forEach(item => { if (item.name === oldName) item.name = newName; });
+    state.favorites = state.favorites.map(name => name === oldName ? newName : name);
+    state.hiddenRecent = state.hiddenRecent.map(name => name === oldName ? newName : name);
+    if (state.running && state.running.name === oldName) state.running.name = newName;
+    if (state.selectedTask === oldName) state.selectedTask = newName;
+    persist();
+    renderAll();
+    toast(`任务名已改为「${newName}」`);
+  }
+
+  function startRenaming(goal, nameButton) {
+    const input = document.createElement('input');
+    input.className = 'week-name-input';
+    input.type = 'text';
+    input.maxLength = 40;
+    input.value = goal.name;
+    input.setAttribute('aria-label', '修改待办任务名称');
+    nameButton.replaceWith(input);
+    input.focus();
+    input.select();
+    let finished = false;
+    const finish = (save) => {
+      if (finished) return;
+      finished = true;
+      if (!save) { renderWeekly(); return; }
+      const nextName = input.value.trim();
+      if (!nextName || nextName === goal.name) { renderWeekly(); return; }
+      renameWeeklyTask(goal, nextName);
+    };
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') { event.preventDefault(); finish(true); }
+      else if (event.key === 'Escape') { event.preventDefault(); finish(false); }
+    });
+    input.addEventListener('blur', () => finish(true));
   }
 
   function renderWeekly() {
@@ -1336,9 +1416,12 @@
       body.className = 'week-body';
       const nameRow = document.createElement('div');
       nameRow.className = 'week-name-row';
-      const name = document.createElement('div');
+      const name = document.createElement('button');
+      name.type = 'button';
       name.className = 'week-name';
       name.textContent = goal.name;
+      name.title = '点击修改任务名';
+      name.addEventListener('click', () => startRenaming(goal, name));
       const isFixed = state.fixedTasks.some(template => template.name === goal.name);
       const pin = document.createElement('button');
       pin.type = 'button';
@@ -1356,6 +1439,7 @@
             id: uid(),
             name: goal.name,
             targetSeconds: goal.targetSeconds,
+            priority: goal.priority || 'normal',
             createdAt: new Date().toISOString()
           });
           toast(`已固定「${goal.name}」，可从下方加到下一周`);
@@ -1382,6 +1466,51 @@
         body.appendChild(progress);
       }
 
+      const controls = document.createElement('div');
+      controls.className = 'week-controls';
+
+      const priority = document.createElement('select');
+      priority.className = 'week-priority';
+      priority.dataset.priority = goal.priority || 'normal';
+      priority.setAttribute('aria-label', `${goal.name}的重要程度`);
+      priority.title = '修改重要程度';
+      Object.entries(PRIORITY_LABELS).forEach(([value, label]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        option.selected = value === (goal.priority || 'normal');
+        priority.appendChild(option);
+      });
+      priority.addEventListener('change', () => {
+        goal.priority = priority.value;
+        priority.dataset.priority = goal.priority;
+        const fixed = state.fixedTasks.find(template => template.name === goal.name);
+        if (fixed) fixed.priority = goal.priority;
+        persist();
+        renderWeekly();
+        toast(`「${goal.name}」重要程度：${PRIORITY_LABELS[goal.priority]}`);
+      });
+      controls.appendChild(priority);
+
+      const dateInput = document.createElement('input');
+      dateInput.type = 'date';
+      dateInput.className = 'week-date' + (goal.dueDate && goal.dueDate < dateKey() && !goal.done ? ' overdue' : '');
+      dateInput.value = goal.dueDate || '';
+      dateInput.setAttribute('aria-label', `${goal.name}的截止日期`);
+      dateInput.title = '点开日历修改截止日期';
+      dateInput.addEventListener('click', () => {
+        if (typeof dateInput.showPicker === 'function') {
+          try { dateInput.showPicker(); } catch (err) { /* 浏览器不支持时直接使用原生输入 */ }
+        }
+      });
+      dateInput.addEventListener('change', () => {
+        goal.dueDate = dateInput.value || null;
+        persist();
+        renderWeekly();
+        toast(goal.dueDate ? `「${goal.name}」截止日期：${goal.dueDate.replaceAll('-', '/')}` : `已清除「${goal.name}」的截止日期`);
+      });
+      controls.appendChild(dateInput);
+
       const targetLabel = document.createElement('label');
       targetLabel.className = 'week-target-edit';
       targetLabel.append(document.createTextNode('目标 '));
@@ -1400,27 +1529,32 @@
         hours = Math.min(hours, 168);
         goal.targetSeconds = Math.round(hours * 3600);
         const fixed = state.fixedTasks.find(template => template.name === goal.name);
-        if (fixed) fixed.targetSeconds = goal.targetSeconds;
+        if (fixed) {
+          fixed.targetSeconds = goal.targetSeconds;
+          fixed.priority = goal.priority || 'normal';
+        }
         persist();
         renderWeekly();
         toast(hours ? `「${goal.name}」本周目标 ${fmtDuration(goal.targetSeconds)}` : `已取消「${goal.name}」的目标时长`);
       });
       targetLabel.append(targetInput, document.createTextNode(' h'));
+      controls.appendChild(targetLabel);
+      body.appendChild(controls);
 
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'week-remove';
       remove.textContent = '×';
-      remove.title = '删除本周任务（不会删除计时记录）';
-      remove.setAttribute('aria-label', `删除本周任务：${goal.name}`);
+      remove.title = '删除本周待办（不会删除计时记录）';
+      remove.setAttribute('aria-label', `删除本周待办：${goal.name}`);
       remove.addEventListener('click', () => {
         state.weeklyGoals = state.weeklyGoals.filter(item => item.id !== goal.id);
         persist();
         renderWeekly();
-        toast(`已删除本周任务「${goal.name}」，计时记录仍保留`);
+        toast(`已删除本周待办「${goal.name}」，计时记录仍保留`);
       });
 
-      row.append(checkLabel, body, targetLabel, remove);
+      row.append(checkLabel, body, remove);
       list.appendChild(row);
     });
   }
