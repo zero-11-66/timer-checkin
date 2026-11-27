@@ -102,7 +102,10 @@
   .week-stat span { display: block; color: var(--muted); font-size: 10px; margin-bottom: 3px; }
   .week-stat strong { display: block; font-size: 13px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   .week-list { display: grid; gap: 8px; }
-  .week-goal { display: grid; grid-template-columns: 22px minmax(0, 1fr) 22px; gap: 9px; align-items: start; padding: 10px 10px 10px 11px; border: 1px solid #e9e2d4; border-radius: 13px; background: #fcf9f2; }
+  .week-goal { display: grid; grid-template-columns: 22px minmax(0, 1fr) 22px; gap: 9px; align-items: start; padding: 10px 10px 10px 11px; border: 1px solid #e9e2d4; border-radius: 13px; background: #fcf9f2; cursor: pointer; transition: border-color .15s, box-shadow .15s, background .15s; }
+  .week-goal:hover { border-color: #d5c6b0; }
+  .week-goal.picked { border-color: #9db6a2; background: #f8fbf5; box-shadow: 0 0 0 2px rgba(157, 182, 162, .16); }
+  .week-goal button, .week-goal input, .week-goal select, .week-goal label { cursor: auto; }
   .week-goal.done { background: #f0f5ee; border-color: #cbdccd; }
   .week-check { position: relative; width: 21px; height: 21px; cursor: pointer; }
   .week-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
@@ -376,7 +379,7 @@
           </div>
           <div class="fixed-list" id="fixedList"></div>
         </div>
-        <p class="week-note">点任务名会填入上方计时框，并可直接改名；重要程度和截止日期可点开调整。实际时间自动来自本周计时记录，点 ☆ 可固定，之后一键加到下一周。</p>
+        <p class="week-note">点任务卡片会填入上方计时框；点任务名还能直接改名。重要程度和截止日期可点开调整，点 ☆ 可固定，之后一键加到下一周。</p>
       </section>
 
       <section class="card records-card" aria-label="记录明细">
@@ -1312,6 +1315,12 @@
     return true;
   }
 
+  function markPickedRow(name) {
+    document.querySelectorAll('.week-goal').forEach(row => {
+      row.classList.toggle('picked', row.dataset.taskName === name);
+    });
+  }
+
   function renameWeeklyTask(goal, rawName) {
     const oldName = goal.name;
     const newName = rawName.trim().slice(0, 40);
@@ -1344,7 +1353,10 @@
 
   function startRenaming(goal, nameButton) {
     const filled = fillTimerTask(goal.name);
-    if (filled) toast(`已把「${goal.name}」填入上方计时框`);
+    if (filled) {
+      markPickedRow(goal.name);
+      toast(`已把「${goal.name}」填入上方计时框`);
+    }
     const input = document.createElement('input');
     input.className = 'week-name-input';
     input.type = 'text';
@@ -1405,7 +1417,19 @@
       const met = goal.targetSeconds > 0 && actualSeconds >= goal.targetSeconds;
 
       const row = document.createElement('div');
-      row.className = 'week-goal' + (goal.done ? ' done' : '') + (met ? ' met' : '');
+      const picked = !state.running && $('taskInput').value.trim() === goal.name;
+      row.className = 'week-goal' + (goal.done ? ' done' : '') + (met ? ' met' : '') + (picked ? ' picked' : '');
+      row.dataset.taskName = goal.name;
+      row.addEventListener('click', (event) => {
+        if (event.target.closest('button, input, select, label, a')) return;
+        const filled = fillTimerTask(goal.name);
+        if (!filled) {
+          toast('正在计时，先结束当前计时再切换任务');
+          return;
+        }
+        markPickedRow(goal.name);
+        toast(`已填入「${goal.name}」，点上方「开始计时」即可`);
+      });
 
       const checkLabel = document.createElement('label');
       checkLabel.className = 'week-check';
